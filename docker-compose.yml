@@ -10,7 +10,7 @@ services:
       - stats-db
     environment:
       - EXPLORE_SERVER_URL=http://ewm-service:8080
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/explore-stats
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/explore-stat
       - SPRING_DATASOURCE_USERNAME=sa
       - SPRING_DATASOURCE_PASSWORD=password
 
@@ -24,13 +24,13 @@ services:
     volumes:
       - /var/lib/postgresql/explore-stat/
     environment:
-      - POSTGRES_DB=explore-stats
+      - POSTGRES_DB=explore-stat
       - POSTGRES_USER=sa
       - POSTGRES_PASSWORD=password
 
   ewm-service:
     build: ./explore-server
-    image:   java-explore-with-me/explore-server
+    image: java-explore-with-me/explore-server
     container_name: explore-server
     ports:
       - "8080:8080"

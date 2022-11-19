@@ -15,9 +15,11 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse generalException(Throwable e) {
         log.warn("Неожиданная ошибка сервера. {}", e.getMessage());
+        e.printStackTrace();
         return new ErrorResponse("Неожиданная ошибка сервера.", e.getMessage());
     }
 
+    //TODO убрать, если не нужен
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse illegalArgumentException(IllegalArgumentException e) {

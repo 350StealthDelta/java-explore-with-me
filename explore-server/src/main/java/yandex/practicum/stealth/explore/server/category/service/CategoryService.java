@@ -8,15 +8,15 @@ import java.util.List;
 
 public interface CategoryService {
 
-    List<CategoryDto> getCategories(Integer from, Integer size);
+    List<CategoryDto> getAll(Integer from, Integer size);
 
-    CategoryDto getCategoryById(Long catId);
+    CategoryDto getById(Long catId);
 
-    Category findCategoryById(Long catId);
+    Category findById(Long catId);
 
-    CategoryDto addCategory(NewCategoryDto body);
+    CategoryDto create(NewCategoryDto body);
 
-    CategoryDto updateCategory(CategoryDto body);
+    CategoryDto update(CategoryDto body);
 
-    void deleteCategoryById(Long catId);
+    void deleteById(Long catId);
 }

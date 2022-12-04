@@ -32,6 +32,7 @@ public class StatServiceImpl implements StatService {
         StatEntity result = repository.save(statEntity);
         System.out.println(result);
         System.out.println(repository.findById(result.getId()).orElseThrow());
+
         return viewToOutDto(statToView(result));
     }
 
@@ -41,6 +42,7 @@ public class StatServiceImpl implements StatService {
         LocalDateTime startTime = LocalDateTime.parse(start, formatter);
         LocalDateTime endTime = LocalDateTime.parse(end, formatter);
         List<ViewEntity> viewEntities;
+
         if (unique) {
             viewEntities = uris.stream()
                     .map(s -> repository.findAllHitsDistinct(s, startTime, endTime))

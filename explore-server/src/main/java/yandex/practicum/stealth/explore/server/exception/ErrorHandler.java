@@ -28,6 +28,7 @@ public class ErrorHandler {
         log.warn("Internal server error {}, {}, {}, {}", e.getMessage(), reason, HttpStatus.INTERNAL_SERVER_ERROR.name(),
                 LocalDateTime.now());
         e.printStackTrace();
+
         return new ErrorResponse(e.getStackTrace(), e.getMessage(), reason,
                 HttpStatus.INTERNAL_SERVER_ERROR, LocalDateTime.now());
     }
@@ -37,7 +38,7 @@ public class ErrorHandler {
             MissingServletRequestParameterException.class,
             HttpMessageNotReadableException.class,
             DuplicateKeyException.class,
-            RequestWithEnErrorException.class,
+            BadRequestException.class,
             MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse illegalArgumentException(Exception e) {
@@ -45,18 +46,20 @@ public class ErrorHandler {
         log.warn("IllegalArgumentException {}, {}, {}, {}", e.getMessage(), reason, HttpStatus.BAD_REQUEST.name(),
                 LocalDateTime.now());
         e.printStackTrace();
+
         return new ErrorResponse(e.getStackTrace(), e.getMessage(), reason,
                 HttpStatus.BAD_REQUEST, LocalDateTime.now());
     }
 
     @ExceptionHandler({NullPointerException.class,
-            CustomEntityNotFoundException.class})
+            NotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse entityNotFoundException(Exception e) {
         String reason = "The required object was not found.";
         log.warn("{}, {}, {}, {}", HttpStatus.NOT_FOUND.name(), reason, e.getMessage(),
                 LocalDateTime.now());
         e.printStackTrace();
+
         return new ErrorResponse(e.getStackTrace(), e.getMessage(), reason, HttpStatus.NOT_FOUND,
                 LocalDateTime.now());
     }
@@ -69,6 +72,7 @@ public class ErrorHandler {
         log.warn("{}, {}, {}, {}", HttpStatus.FORBIDDEN.name(), reason, e.getMessage(),
                 LocalDateTime.now());
         e.printStackTrace();
+
         return new ErrorResponse(e.getStackTrace(), e.getMessage(), reason, HttpStatus.FORBIDDEN,
                 LocalDateTime.now());
     }
@@ -80,6 +84,7 @@ public class ErrorHandler {
         String reason = "For the requested operation the conditions are not met.";
         log.warn("{}, {}, {}, {}", HttpStatus.CONFLICT.name(), reason, e.getMessage(),
                 LocalDateTime.now());
+
         e.printStackTrace();
         return new ErrorResponse(e.getStackTrace(), e.getMessage(), reason, HttpStatus.CONFLICT,
                 LocalDateTime.now());

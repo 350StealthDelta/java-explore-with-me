@@ -20,19 +20,19 @@ import java.util.List;
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "compilations_id")
+    @Column(name = "cp_id")
     private Long id;
 
-    @Column(name = "pinned")
+    @Column(name = "cp_pinned")
     private Boolean pinned;
 
-    @Column(name = "compilations_title")
+    @Column(name = "cp_title")
     @Size(min = 3, max = 120)
     private String title;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
-            name = "compilation_events",
+            name = "comp_events",
             joinColumns = {@JoinColumn(name = "ce_compilation_id")},
             inverseJoinColumns = {@JoinColumn(name = "ce_event_id")})
     @ToString.Exclude

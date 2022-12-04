@@ -18,27 +18,37 @@ import java.time.LocalDateTime;
 @Builder
 @Jacksonized
 public class NewEventDto {
+
     @Positive(groups = {OnUpdate.class})
     private Long eventId;
+
     @NotNull(groups = {OnUpdate.class, OnCreate.class})
     @Size(min = 20, max = 2000)
     private String annotation;
+
     @NotNull(groups = {OnUpdate.class, OnCreate.class})
     private Long category;
+
     @NotNull(groups = {OnUpdate.class, OnCreate.class})
     @Size(min = 20, max = 7000)
     private String description;
+
     @Future(groups = {OnUpdate.class, OnCreate.class})
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
+
     @NotNull(groups = {OnCreate.class})
     private Location location;
+
     @NotNull(groups = {OnUpdate.class, OnCreate.class})
     private Boolean paid;
+
     @PositiveOrZero(groups = {OnUpdate.class, OnCreate.class})
     private Integer participantLimit;
+
     @NotNull(groups = {OnCreate.class})
     private Boolean requestModeration;
+
     @NotNull(groups = {OnUpdate.class, OnCreate.class})
     @Size(min = 3, max = 120)
     private String title;

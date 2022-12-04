@@ -22,12 +22,14 @@ public class CategoryController {
                                            @RequestParam(defaultValue = "10") Integer size,
                                            HttpServletRequest request) {
         log.info("=== Call 'GET:{}' with 'from': {}, 'size': {}", request.getRequestURI(), from, size);
-        return service.getCategories(from, size);
+
+        return service.getAll(from, size);
     }
 
     @GetMapping("/{catId}")
     public CategoryDto getCategoryById(@PathVariable Long catId, HttpServletRequest request) {
         log.info("=== Call 'GET:{}' with 'catId': {}", request.getRequestURI(), catId);
-        return service.getCategoryById(catId);
+
+        return service.getById(catId);
     }
 }

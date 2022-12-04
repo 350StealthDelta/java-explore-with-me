@@ -24,12 +24,12 @@ public class CompilationController {
                                                 HttpServletRequest request) {
         log.info("=== Call 'GET:{}', with 'pinned': {}, 'from': {}, 'size': {}",
                 request.getRequestURI(), pinned, from, size);
-        return service.getCompilations(pinned, from, size);
+        return service.getAll(pinned, from, size);
     }
 
     @GetMapping("/{compId}")
     public CompilationDto getCompilationById(@PathVariable Long compId, HttpServletRequest request) {
         log.info("=== Call 'GET:{}' with 'compId': {}", request.getRequestURI(), compId);
-        return service.getCompilationById(compId);
+        return service.getById(compId);
     }
 }

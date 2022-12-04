@@ -16,14 +16,16 @@ public class ErrorHandler {
     public ErrorResponse generalException(Throwable e) {
         log.warn("Неожиданная ошибка сервера. {}", e.getMessage());
         e.printStackTrace();
+
         return new ErrorResponse("Неожиданная ошибка сервера.", e.getMessage());
     }
 
-    //TODO убрать, если не нужен
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse illegalArgumentException(IllegalArgumentException e) {
         log.warn("IllegalArgumentException {}", e.getMessage());
+        e.printStackTrace();
+
         return new ErrorResponse(e.getMessage(), "IllegalArgumentException");
     }
 }

@@ -19,46 +19,62 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "events", schema = "public")
 public class Event {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "events_id")
+    @Column(name = "e_id")
     private Long id;
-    @Column(name = "annotation", nullable = false)
+
+    @Column(name = "e_annotation", nullable = false)
     @Size(min = 20, max = 2000)
     private String annotation;
+
     @ManyToOne
-    @JoinColumn(name = "events_category_id", nullable = false)
+    @JoinColumn(name = "e_cat_id", nullable = false)
     private Category category;
-    @Column(name = "confirmed_request")
+
+    @Column(name = "e_confirmed_request")
     private Long confirmedRequests;
-    @Column(name = "created_on", nullable = false)
+
+    @Column(name = "e_created_on", nullable = false)
     private LocalDateTime createdOn;
-    @Column(name = "description", nullable = false)
+
+    @Column(name = "e_description", nullable = false)
     @Size(min = 20, max = 7000)
     private String description;
-    @Column(name = "event_date")
+
+    @Column(name = "e_date")
     private LocalDateTime eventDate;
+
     @ManyToOne
-    @JoinColumn(name = "initiator", nullable = false)
+    @JoinColumn(name = "e_initiator", nullable = false)
     private User initiator;
+
     @ManyToOne
-    @JoinColumn(name = "events_location")
+    @JoinColumn(name = "e_location")
     private Location location;
-    @Column(name = "paid")
+
+    @Column(name = "e_paid")
     private Boolean paid;
-    @Column(name = "participant_limit")
+
+    @Column(name = "e_participant_limit")
     private Integer participantLimit;
-    @Column(name = "published_on", nullable = false)
+
+    @Column(name = "e_published_on", nullable = false)
     private LocalDateTime publishedOn;
-    @Column(name = "request_moderation")
+
+    @Column(name = "e_request_moderation")
     private Boolean requestModeration;
-    @Column(name = "state", nullable = false)
+
+    @Column(name = "e_state", nullable = false)
     @Enumerated(EnumType.STRING)
     private EventState state;
-    @Column(name = "events_title", nullable = false)
+
+    @Column(name = "e_title", nullable = false)
     @Size(min = 3, max = 120)
     private String title;
-    @Column(name = "views")
+
+    @Column(name = "e_views")
     private Long views;
 
     public void addView() {

@@ -35,6 +35,7 @@ public class UserController {
                                              HttpServletRequest request) {
         log.info("=== Call 'GET:{}' with 'userId': {}, 'from': {}, 'size': {}",
                 request.getRequestURI(), userId, from, size);
+
         return eventService.getUserEvents(userId, from, size);
     }
 
@@ -45,6 +46,7 @@ public class UserController {
                                         HttpServletRequest request) {
         log.info("=== Call 'PATCH:{}' with 'userId': {}, 'event': {}",
                 request.getRequestURI(), userId, event);
+
         EventFullDto eventFullDto = eventService.updateUserEvent(userId, event);
         log.info("=== Event updated: {}", eventFullDto);
         return eventFullDto;
@@ -57,6 +59,7 @@ public class UserController {
                                      HttpServletRequest request) {
         log.info("=== Call 'POST:{}' with 'userId': {}, 'event': {}",
                 request.getRequestURI(), userId, event);
+
         return eventService.addUserEvent(userId, event);
     }
 
@@ -66,6 +69,7 @@ public class UserController {
                                          HttpServletRequest request) {
         log.info("=== Call 'GET:{}' with 'userId': {}, 'eventId': {}",
                 request.getRequestURI(), userId, eventId);
+
         return eventService.getUserEventById(userId, eventId);
     }
 
@@ -75,6 +79,7 @@ public class UserController {
                                             HttpServletRequest request) {
         log.info("=== Call 'PATCH:{}' with 'userId': {}, 'eventId': {}",
                 request.getRequestURI(), userId, eventId);
+
         return eventService.updateUserEventById(userId, eventId);
     }
 
@@ -86,6 +91,7 @@ public class UserController {
                                                                HttpServletRequest request) {
         log.info("=== Call 'GET:{}' with 'userId': {}, 'eventId': {}",
                 request.getRequestURI(), userId, eventId);
+
         return requestService.getUserEventRequests(userId, eventId);
     }
 
@@ -96,6 +102,7 @@ public class UserController {
                                                                  HttpServletRequest request) {
         log.info("=== Call 'PATCH:{}' with 'userId': {}, 'eventId': {}, 'reqId': {}",
                 request.getRequestURI(), userId, eventId, reqId);
+
         return requestService.confirmEventRequest(userId, eventId, reqId);
     }
 
@@ -106,6 +113,7 @@ public class UserController {
                                                                 HttpServletRequest request) {
         log.info("=== Call 'PATCH:{}' with 'userId': {}, 'eventId': {}, 'reqId': {}",
                 request.getRequestURI(), userId, eventId, reqId);
+
         return requestService.rejectEventRequest(userId, eventId, reqId);
     }
 
@@ -114,6 +122,7 @@ public class UserController {
                                                          HttpServletRequest request) {
         log.info("=== Call 'GET:{}' with 'userId': {}",
                 request.getRequestURI(), userId);
+
         return requestService.getRequestsForParticipate(userId);
     }
 
@@ -123,6 +132,7 @@ public class UserController {
                                                   HttpServletRequest request) {
         log.info("=== Call 'POST:{}' with 'userId': {}, 'eventId': {}",
                 request.getRequestURI(), userId, eventId);
+
         return requestService.addParticipationRequest(userId, eventId);
     }
 
@@ -132,6 +142,7 @@ public class UserController {
                                                      HttpServletRequest request) {
         log.info("=== Call 'PATCH:{}' with 'userId': {}, 'requestId': {}",
                 request.getRequestURI(), userId, requestId);
+
         return requestService.rejectUserParticipationRequest(userId, requestId);
     }
 }

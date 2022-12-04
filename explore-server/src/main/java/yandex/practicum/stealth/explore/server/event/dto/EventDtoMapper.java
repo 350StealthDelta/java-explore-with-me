@@ -1,6 +1,5 @@
 package yandex.practicum.stealth.explore.server.event.dto;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import yandex.practicum.stealth.explore.server.category.model.Category;
 import yandex.practicum.stealth.explore.server.event.model.Event;
@@ -15,41 +14,26 @@ import static yandex.practicum.stealth.explore.server.user.dto.UserDtoMapper.use
 @Component
 public class EventDtoMapper {
 
-    @Autowired
-
     public static EventFullDto eventToFullDto(Event event) {
-        return EventFullDto.builder()
-                .id(event.getId())
-                .annotation(event.getAnnotation())
-                .category(catToDto(event.getCategory()))
-                .confirmedRequests(event.getConfirmedRequests())
+        EventFullDto eventFullDto = EventFullDto.builder()
                 .createdOn(event.getCreatedOn())
                 .description(event.getDescription())
-                .eventDate(event.getEventDate())
-                .initiator(userToShortDto(event.getInitiator()))
                 .location(event.getLocation())
-                .paid(event.getPaid())
                 .participantLimit(event.getParticipantLimit())
                 .publishedOn(event.getPublishedOn())
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState())
-                .title(event.getTitle())
-                .views(event.getViews())
                 .build();
+        setEventToDto(event, eventFullDto);
+
+        return eventFullDto;
     }
 
     public static EventShortDto eventToShortDto(Event event) {
-        return EventShortDto.builder()
-                .id(event.getId())
-                .annotation(event.getAnnotation())
-                .category(catToDto(event.getCategory()))
-                .confirmedRequests(event.getConfirmedRequests())
-                .eventDate(event.getEventDate())
-                .initiator(userToShortDto(event.getInitiator()))
-                .paid(event.getPaid())
-                .title(event.getTitle())
-                .views(event.getViews())
-                .build();
+        EventShortDto eventShortDto = EventShortDto.builder().build();
+        setEventToDto(event, eventShortDto);
+
+        return eventShortDto;
     }
 
     public static Event newDtoToEvent(NewEventDto newEventDto, Category category, User user) {
@@ -70,5 +54,17 @@ public class EventDtoMapper {
                 .title(newEventDto.getTitle())
                 .views(0L)
                 .build();
+    }
+
+    private static void setEventToDto(Event event, AbstractEventDto eventDto) {
+        eventDto.setId(event.getId());
+        eventDto.setAnnotation(event.getAnnotation());
+        eventDto.setCategory(catToDto(event.getCategory()));
+        eventDto.setConfirmedRequests(event.getConfirmedRequests());
+        eventDto.setEventDate(event.getEventDate());
+        eventDto.setInitiator(userToShortDto(event.getInitiator()));
+        eventDto.setPaid(event.getPaid());
+        eventDto.setTitle(event.getTitle());
+        eventDto.setViews(event.getViews());
     }
 }

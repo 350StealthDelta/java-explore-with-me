@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 @ToString
 @Builder
 public class NewCategoryDto {
+
     @NotBlank
     private String name;
 }

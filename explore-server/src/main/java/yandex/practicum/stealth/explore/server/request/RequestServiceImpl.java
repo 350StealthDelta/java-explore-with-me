@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import yandex.practicum.stealth.explore.server.event.model.Event;
 import yandex.practicum.stealth.explore.server.event.service.EventService;
 import yandex.practicum.stealth.explore.server.exception.ConditionsNotMetException;
-import yandex.practicum.stealth.explore.server.exception.CustomEntityNotFoundException;
-import yandex.practicum.stealth.explore.server.exception.RequestWithEnErrorException;
+import yandex.practicum.stealth.explore.server.exception.NotFoundException;
+import yandex.practicum.stealth.explore.server.exception.BadRequestException;
 import yandex.practicum.stealth.explore.server.request.dao.RequestRepository;
 import yandex.practicum.stealth.explore.server.request.dto.ParticipationDtoMapper;
 import yandex.practicum.stealth.explore.server.request.dto.ParticipationRequestDto;
@@ -38,8 +38,7 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> getUserEventRequests(Long userId, Long eventId) {
         userService.getUserById(userId);
         eventService.findEventById(eventId);
-        List<ParticipationRequest> requests = requestRepository.findAllByEventId(eventId);
-        System.out.println(requests);
+
         return requestRepository.findAllByEventId(eventId).stream()
                 .map(participationDtoMapper::requestToDto)
                 .collect(Collectors.toList());
@@ -52,15 +51,18 @@ public class RequestServiceImpl implements RequestService {
         ParticipationRequest request = getRequest(reqId);
         if (event.getRequestModeration().equals(false) || event.getParticipantLimit().equals(0)) {
             request.setStatus(CONFIRMED);
+
             return participationDtoMapper.requestToDto(request);
         }
         Long confirmedRequests = countRequests(eventId, CONFIRMED);
         if (confirmedRequests < event.getParticipantLimit()) {
             request.setStatus(CONFIRMED);
+
             return participationDtoMapper.requestToDto(request);
         }
         request.setStatus(REJECTED);
         requestRepository.save(request);
+
         return participationDtoMapper.requestToDto(request);
     }
 
@@ -71,6 +73,7 @@ public class RequestServiceImpl implements RequestService {
         ParticipationRequest request = getRequest(reqId);
         request.setStatus(REJECTED);
         requestRepository.save(request);
+
         return participationDtoMapper.requestToDto(request);
     }
 
@@ -87,16 +90,16 @@ public class RequestServiceImpl implements RequestService {
         User user = userService.getUserById(userId);
         Event event = eventService.findEventById(eventId);
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new RequestWithEnErrorException("Participation in unpublished events is denied");
+            throw new BadRequestException("Participation in unpublished events is denied");
         }
         if (event.getInitiator().getId().equals(userId)) {
-            throw new RequestWithEnErrorException(String
-                    .format("User id=%s is owner of event id=%s. Participation in your own events is denied",
+            throw new BadRequestException(
+                    String.format("User id=%s is owner of event id=%s. Participation in your own events is denied",
                             userId, eventId));
         }
         if (requestRepository.findAllByRequester_IdAndEvent_Id(userId, eventId).stream().findFirst().isPresent()) {
-            throw new RequestWithEnErrorException(String
-                    .format("Request from user id=%s for event id=%s already exist.", userId, eventId));
+            throw new BadRequestException(
+                    String.format("Request from user id=%s for event id=%s already exist.", userId, eventId));
         }
         if (event.getParticipantLimit() != 0 && countRequests(eventId, CONFIRMED) >= event.getParticipantLimit()) {
             throw new ConditionsNotMetException("The limit on the number of participants has been exceeded.");
@@ -110,6 +113,7 @@ public class RequestServiceImpl implements RequestService {
         if (!event.getRequestModeration()) {
             request.setStatus(CONFIRMED);
         }
+
         requestRepository.save(request);
         return participationDtoMapper.requestToDto(request);
     }
@@ -118,22 +122,26 @@ public class RequestServiceImpl implements RequestService {
         userService.getUserById(userId);
         ParticipationRequest request = getRequest(requestId);
         if (!request.getRequester().getId().equals(userId)) {
-            throw new RequestWithEnErrorException(String
-                    .format("User id=%s is not requester of request id=%s.", userId, requestId));
+            throw new BadRequestException(
+                    String.format("User id=%s is not requester of request id=%s.", userId, requestId));
         }
         request.setStatus(CANCELED);
+
         requestRepository.save(request);
         return participationDtoMapper.requestToDto(request);
     }
 
     // privates
     private Long countRequests(Long eventId, ParticipationStatus status) {
+
         return requestRepository.countConfirmedRequests(eventId, status);
     }
 
     private ParticipationRequest getRequest(Long reqId) {
+
         return requestRepository.findById(reqId).orElseThrow(() -> {
-            throw new CustomEntityNotFoundException(String.format("Request with id=%s was not found.", reqId));
+            throw new NotFoundException(
+                    String.format("Request with id=%s was not found.", reqId));
         });
     }
 }

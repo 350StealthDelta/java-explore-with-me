@@ -25,6 +25,7 @@ public class StatController {
     public ViewStats addRequestToStat(@RequestBody @Valid EndpointHit inputDto,
                                       HttpServletRequest request) {
         log.info("=== Call 'POST:{}' with 'inputDto': {}", request.getRequestURI(), inputDto);
+
         return service.addEventStatistic(inputDto);
     }
 
@@ -38,8 +39,8 @@ public class StatController {
                 request.getRequestURI(), start, end, uris, unique);
         List<ViewStats> stats = service.getEvents(start, end, uris, unique);
         log.info("=== RESULT: {}", stats);
+
         return stats;
     }
-
 
 }

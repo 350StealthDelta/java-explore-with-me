@@ -1,6 +1,9 @@
 package yandex.practicum.stealth.explore.server.event.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yandex.practicum.stealth.explore.server.category.model.Category;
@@ -15,11 +18,12 @@ import yandex.practicum.stealth.explore.server.event.dto.NewEventDto;
 import yandex.practicum.stealth.explore.server.event.model.Event;
 import yandex.practicum.stealth.explore.server.event.model.Location;
 import yandex.practicum.stealth.explore.server.exception.ConditionsNotMetException;
-import yandex.practicum.stealth.explore.server.exception.CustomEntityNotFoundException;
 import yandex.practicum.stealth.explore.server.exception.NotAllowedException;
+import yandex.practicum.stealth.explore.server.exception.NotFoundException;
 import yandex.practicum.stealth.explore.server.request.dao.RequestRepository;
 import yandex.practicum.stealth.explore.server.user.model.User;
 import yandex.practicum.stealth.explore.server.user.service.UserService;
+import yandex.practicum.stealth.explore.server.util.CustomPageRequest;
 import yandex.practicum.stealth.explore.server.util.EventSort;
 import yandex.practicum.stealth.explore.server.util.EventState;
 import yandex.practicum.stealth.explore.server.util.ParticipationStatus;
@@ -52,46 +56,47 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getAllEvents(String text, List<Integer> categories, Boolean paid,
                                             LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                             Integer from, Integer size, EventSort sort) {
-        List<Event> events;
+        PageRequest pageRequest = CustomPageRequest.of(from, size, Sort.unsorted());
+        Page<Event> events;
         switch (sort) {
             case VIEWS:
-                events = specRepository.findAll(where(hasText(text))
-                        .and(hasCategories(categories))
-                        .and(hasPaid(paid))
-                        .and(hasRangeStart(rangeStart))
-                        .and(hasRangeEnd(rangeEnd))
-                        .and(hasAvailable(onlyAvailable)));
+                events = specRepository.findAll(
+                        where(hasText(text))
+                                .and(hasCategories(categories))
+                                .and(hasPaid(paid))
+                                .and(hasRangeStart(rangeStart))
+                                .and(hasRangeEnd(rangeEnd))
+                                .and(hasAvailable(onlyAvailable)),
+                        pageRequest);
                 return events.stream()
                         .sorted(Comparator.comparing(Event::getViews))
-                        .skip(from)
-                        .limit(size)
                         .map(EventDtoMapper::eventToShortDto)
                         .collect(Collectors.toList());
 
             case EVENT_DATE:
-                events = specRepository.findAll(where(hasText(text))
-                        .and(hasCategories(categories))
-                        .and(hasPaid(paid))
-                        .and(hasRangeStart(rangeStart))
-                        .and(hasRangeEnd(rangeEnd))
-                        .and(hasAvailable(onlyAvailable)));
+                events = specRepository.findAll(
+                        where(hasText(text))
+                                .and(hasCategories(categories))
+                                .and(hasPaid(paid))
+                                .and(hasRangeStart(rangeStart))
+                                .and(hasRangeEnd(rangeEnd))
+                                .and(hasAvailable(onlyAvailable)),
+                        pageRequest);
                 return events.stream()
                         .sorted(Comparator.comparing(Event::getEventDate))
-                        .skip(from)
-                        .limit(size)
                         .map(EventDtoMapper::eventToShortDto)
                         .collect(Collectors.toList());
             default:
-                events = specRepository.findAll(where(hasText(text))
-                        .and(hasCategories(categories))
-                        .and(hasPaid(paid))
-                        .and(hasRangeStart(rangeStart))
-                        .and(hasRangeEnd(rangeEnd))
-                        .and(hasAvailable(onlyAvailable)));
+                events = specRepository.findAll(
+                        where(hasText(text))
+                                .and(hasCategories(categories))
+                                .and(hasPaid(paid))
+                                .and(hasRangeStart(rangeStart))
+                                .and(hasRangeEnd(rangeEnd))
+                                .and(hasAvailable(onlyAvailable)),
+                        pageRequest);
                 return events.stream()
                         .sorted(Comparator.comparing(Event::getId))
-                        .skip(from)
-                        .limit(size)
                         .map(EventDtoMapper::eventToShortDto)
                         .collect(Collectors.toList());
         }
@@ -108,6 +113,7 @@ public class EventServiceImpl implements EventService {
         event.setConfirmedRequests(requestCounts);
         EventFullDto eventFullDto = eventToFullDto(findEventById(id));
         event.addView();
+
         eventRepository.save(event);
         return eventFullDto;
     }
@@ -115,10 +121,10 @@ public class EventServiceImpl implements EventService {
     // "/users/{userId}/events" ENDPOINTS
     @Override
     public List<EventShortDto> getUserEvents(Long userId, Integer from, Integer size) {
-        userService.getUserById(userId); // проверка существования пользователя
-        return eventRepository.findEventsByInitiatorId(userId).stream()
-                .skip(from)
-                .limit(size)
+        userService.getUserById(userId);
+        PageRequest pageRequest = CustomPageRequest.of(from, size, Sort.unsorted());
+
+        return eventRepository.findEventsByInitiatorId(userId, pageRequest).stream()
                 .map(EventDtoMapper::eventToShortDto)
                 .collect(Collectors.toList());
     }
@@ -128,6 +134,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto updateUserEvent(Long userId, NewEventDto eventDto) {
         userService.getUserById(userId);
         Event event = findEventById(eventDto.getEventId());
+
         return eventToFullDto(updateEventData(event, eventDto));
     }
 
@@ -135,12 +142,13 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto addUserEvent(Long userId, NewEventDto eventDto) {
         User user = userService.getUserById(userId);
-        Category category = categoryService.findCategoryById(eventDto.getCategory());
+        Category category = categoryService.findById(eventDto.getCategory());
         Location location = Location.builder()
                 .lat(eventDto.getLocation().getLat())
                 .lon(eventDto.getLocation().getLon())
                 .build();
         eventDto.setLocation(locationRepository.save(location));
+
         Event event = eventRepository.save(newDtoToEvent(eventDto, category, user));
         return eventToFullDto(event);
     }
@@ -150,9 +158,10 @@ public class EventServiceImpl implements EventService {
         userService.getUserById(userId);
         Event event = findEventById(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new NotAllowedException(String
-                    .format("User with id=%s is not owner of event with id=%s", userId, eventId));
+            throw new NotAllowedException(
+                    String.format("User with id=%s is not owner of event with id=%s", userId, eventId));
         }
+
         return eventToFullDto(findEventById(eventId));
     }
 
@@ -162,14 +171,15 @@ public class EventServiceImpl implements EventService {
         userService.getUserById(userId);
         Event event = findEventById(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new NotAllowedException(String
-                    .format("User with id=%s is not owner of event with id=%s", userId, eventId));
+            throw new NotAllowedException(
+                    String.format("User with id=%s is not owner of event with id=%s", userId, eventId));
         }
         if (!event.getState().equals(PUBLISHED)) {
             event.setState(event.getState().equals(PENDING) ? CANCELED : PENDING);
         } else {
             throw new NotAllowedException("Only pending or canceled events can be changed");
         }
+
         return eventToFullDto(event);
     }
 
@@ -178,19 +188,22 @@ public class EventServiceImpl implements EventService {
     public List<EventFullDto> searchEvents(List<Long> users, List<EventState> states, List<Integer> categories,
                                            LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                            Integer from, Integer size) {
+        PageRequest pageRequest = CustomPageRequest.of(from, size, Sort.unsorted());
+        Page<Event> events;
         if (users != null || states != null || categories != null || rangeStart != null || rangeEnd != null) {
-            List<Event> events = specRepository.findAll(where(hasUsers(users)).and(hasStates(states))
-                    .and(hasCategories(categories)).and(hasRangeStart(rangeStart)).and(hasRangeEnd(rangeEnd)));
+            events = specRepository.findAll(
+                    where(hasUsers(users))
+                            .and(hasStates(states))
+                            .and(hasCategories(categories))
+                            .and(hasRangeStart(rangeStart))
+                            .and(hasRangeEnd(rangeEnd)),
+                    pageRequest);
+
             return events.stream()
-                    .skip(from)
-                    .limit(size)
                     .map(EventDtoMapper::eventToFullDto)
                     .collect(Collectors.toList());
         } else {
-            List<Event> events = eventRepository.findAll();
-            return events.stream()
-                    .skip(from)
-                    .limit(size)
+            return eventRepository.findAll(pageRequest).stream()
                     .map(EventDtoMapper::eventToFullDto)
                     .collect(Collectors.toList());
         }
@@ -200,24 +213,25 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto updateEventByAdmin(Long eventId, NewEventDto body) {
         Event event = findEventById(eventId);
-        event.setAnnotation(body.getAnnotation() != null ?
-                body.getAnnotation() : event.getAnnotation());
-        event.setCategory(body.getCategory() != null ?
-                categoryService.findCategoryById(body.getCategory()) : event.getCategory());
-        event.setDescription(body.getDescription() != null ?
-                body.getDescription() : event.getDescription());
-        event.setEventDate(body.getEventDate() != null ?
-                body.getEventDate() : event.getEventDate());
-        event.setLocation(body.getLocation() != null ?
-                body.getLocation() : event.getLocation());
-        event.setPaid(body.getPaid() != null ?
-                body.getPaid() : event.getPaid());
-        event.setParticipantLimit(body.getParticipantLimit() != null ?
-                body.getParticipantLimit() : event.getParticipantLimit());
-        event.setRequestModeration(body.getRequestModeration() != null ?
-                body.getRequestModeration() : event.getRequestModeration());
-        event.setTitle(body.getTitle() != null ?
-                body.getTitle() : event.getTitle());
+        event.setAnnotation(
+                body.getAnnotation() != null ? body.getAnnotation() : event.getAnnotation());
+        event.setCategory(
+                body.getCategory() != null ? categoryService.findById(body.getCategory()) : event.getCategory());
+        event.setDescription(
+                body.getDescription() != null ? body.getDescription() : event.getDescription());
+        event.setEventDate(
+                body.getEventDate() != null ? body.getEventDate() : event.getEventDate());
+        event.setLocation(
+                body.getLocation() != null ? body.getLocation() : event.getLocation());
+        event.setPaid(
+                body.getPaid() != null ? body.getPaid() : event.getPaid());
+        event.setParticipantLimit(
+                body.getParticipantLimit() != null ? body.getParticipantLimit() : event.getParticipantLimit());
+        event.setRequestModeration(
+                body.getRequestModeration() != null ? body.getRequestModeration() : event.getRequestModeration());
+        event.setTitle(
+                body.getTitle() != null ? body.getTitle() : event.getTitle());
+
         return eventToFullDto(eventRepository.save(event));
     }
 
@@ -226,10 +240,11 @@ public class EventServiceImpl implements EventService {
     public EventFullDto publishingEventByAdmin(Long eventId) {
         Event event = findEventById(eventId);
         if (event.getEventDate().minusHours(1).isBefore(LocalDateTime.now())) {
-            throw new ConditionsNotMetException(String
-                    .format("Event date of event '%s' with id=%s is too late ", event.getTitle(), eventId));
+            throw new ConditionsNotMetException(
+                    String.format("Event date of event '%s' with id=%s is too late ", event.getTitle(), eventId));
         }
         event.setState(PUBLISHED);
+
         eventRepository.save(event);
         return eventToFullDto(event);
     }
@@ -239,6 +254,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto cancelingEventByAdmin(Long eventId) {
         Event event = findEventById(eventId);
         event.setState(CANCELED);
+
         eventRepository.save(event);
         return eventToFullDto(event);
     }
@@ -246,38 +262,44 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event findEventById(Long eventId) {
         return eventRepository.findById(eventId).orElseThrow(() -> {
-            throw new CustomEntityNotFoundException(String.format("Event with id=%s was not found.", eventId));
+            throw new NotFoundException(
+                    String.format("Event with id=%s was not found.", eventId));
         });
     }
 
     // private methods
     private Event updateEventData(Event event, NewEventDto dto) {
         return Event.builder()
-                .annotation(dto.getAnnotation() != null ?
-                        dto.getAnnotation() : event.getAnnotation())
-                .category(dto.getCategory() != null ?
-                        categoryService.findCategoryById(dto.getCategory()) : event.getCategory())
-                .confirmedRequests(event.getConfirmedRequests())
-                .createdOn(event.getCreatedOn())
-                .description(dto.getDescription() != null ?
-                        dto.getDescription() : event.getDescription())
-                .eventDate(dto.getEventDate() != null ?
-                        dto.getEventDate() :
-                        event.getEventDate())
-                .initiator(event.getInitiator())
-                .location(dto.getLocation() != null ?
-                        dto.getLocation() : event.getLocation())
-                .paid(dto.getPaid() != null ?
-                        dto.getPaid() : event.getPaid())
-                .participantLimit(dto.getParticipantLimit() != null ?
-                        dto.getParticipantLimit() : event.getParticipantLimit())
-                .publishedOn(event.getPublishedOn())
-                .requestModeration(dto.getRequestModeration() != null ?
-                        dto.getRequestModeration() : event.getRequestModeration())
-                .state(event.getState())
-                .title(dto.getTitle() != null ?
-                        dto.getTitle() : event.getTitle())
-                .views(event.getViews())
+                .annotation(
+                        dto.getAnnotation() != null ? dto.getAnnotation() : event.getAnnotation())
+                .category(
+                        dto.getCategory() != null ? categoryService.findById(dto.getCategory()) : event.getCategory())
+                .confirmedRequests(
+                        event.getConfirmedRequests())
+                .createdOn(
+                        event.getCreatedOn())
+                .description(
+                        dto.getDescription() != null ? dto.getDescription() : event.getDescription())
+                .eventDate(
+                        dto.getEventDate() != null ? dto.getEventDate() : event.getEventDate())
+                .initiator(
+                        event.getInitiator())
+                .location(
+                        dto.getLocation() != null ? dto.getLocation() : event.getLocation())
+                .paid(
+                        dto.getPaid() != null ? dto.getPaid() : event.getPaid())
+                .participantLimit(
+                        dto.getParticipantLimit() != null ? dto.getParticipantLimit() : event.getParticipantLimit())
+                .publishedOn(
+                        event.getPublishedOn())
+                .requestModeration(
+                        dto.getRequestModeration() != null ? dto.getRequestModeration() : event.getRequestModeration())
+                .state(
+                        event.getState())
+                .title(
+                        dto.getTitle() != null ? dto.getTitle() : event.getTitle())
+                .views(
+                        event.getViews())
                 .build();
     }
 }

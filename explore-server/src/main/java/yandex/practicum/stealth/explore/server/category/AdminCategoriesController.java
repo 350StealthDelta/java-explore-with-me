@@ -27,7 +27,8 @@ public class AdminCategoriesController {
                                            HttpServletRequest request) {
         log.info("=== Call 'PATCH:{}' with 'body': {}",
                 request.getRequestURI(), body);
-        return categoryService.updateCategory(body);
+
+        return categoryService.update(body);
     }
 
     @PostMapping
@@ -35,7 +36,8 @@ public class AdminCategoriesController {
                                         HttpServletRequest request) {
         log.info("=== Call 'POST:{}' with 'body':{}",
                 request.getRequestURI(), body);
-        return categoryService.addCategory(body);
+
+        return categoryService.create(body);
     }
 
     @DeleteMapping("/{catId}")
@@ -43,7 +45,8 @@ public class AdminCategoriesController {
                                                     HttpServletRequest request) {
         log.info("=== Call 'DELETE:{}' with 'catId': {}",
                 request.getRequestURI(), catId);
-        categoryService.deleteCategoryById(catId);
+        categoryService.deleteById(catId);
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

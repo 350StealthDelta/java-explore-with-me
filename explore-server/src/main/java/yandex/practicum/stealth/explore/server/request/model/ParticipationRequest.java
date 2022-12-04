@@ -20,19 +20,24 @@ import java.time.LocalDateTime;
 @Table(name = "requests", schema = "public")
 @Jacksonized
 public class ParticipationRequest {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "request_id")
+    @Column(name = "rq_id")
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rq_requester", nullable = false)
     private User requester;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rq_event", nullable = false)
     private Event event;
+
     @Column(name = "rq_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private ParticipationStatus status;
+
     @Column(name = "rq_created", nullable = false)
     private LocalDateTime created;
 }

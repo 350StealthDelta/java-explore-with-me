@@ -15,8 +15,10 @@ import java.util.Set;
 @Jacksonized
 public class NewCompilationDto {
     private Set<Long> events;
+
     @Builder.Default()
     private Boolean pinned = false;
+
     @NotBlank
     private String title;
 }

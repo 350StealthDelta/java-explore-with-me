@@ -28,6 +28,7 @@ public class AdminUsersController {
                                        HttpServletRequest request) {
         log.info("=== Call 'GET:{}' with 'ids': {}, 'from': {}, 'size': {}",
                 request.getRequestURI(), ids, from, size);
+
         return userService.getUsers(ids, from, size);
     }
 
@@ -36,6 +37,7 @@ public class AdminUsersController {
                                 HttpServletRequest request) {
         log.info("=== Call 'POST:{}' with 'body': {}",
                 request.getRequestURI(), body);
+
         return userService.addUser(body);
     }
 
@@ -44,6 +46,7 @@ public class AdminUsersController {
                                                 HttpServletRequest request) {
         log.info("=== Call 'DELETE:{}' with 'userId': {}",
                 request.getRequestURI(), userId);
+
         userService.deleteUserById(userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

@@ -9,7 +9,7 @@
     </parent>
 
     <groupId>yandex.practicum.stealth</groupId>
-    <artifactId>explore-statEntity</artifactId>
+    <artifactId>explore-stat</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <name>explore-statEntity</name>

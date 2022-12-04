@@ -40,6 +40,7 @@ public class EventController {
                         " rangeEnd: {}, onlyAvailable: {}, sort: {}, from: {}, size: {}",
                 request.getRequestURI(), text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         statClient.addHitToStatistic(request);
+
         return eventService.getAllEvents(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, from, size, sort);
     }
 
@@ -48,6 +49,7 @@ public class EventController {
         log.info("=== Call 'GET:{}' with id: {}", request.getRequestURI(), id);
         EventFullDto eventFullDto = eventService.getEventById(id);
         statClient.addHitToStatistic(request);
+
         return eventFullDto;
     }
 }

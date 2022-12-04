@@ -10,17 +10,17 @@ import java.util.List;
 
 public interface StatRepository extends JpaRepository<StatEntity, Long> {
 
-    @Query("select new yandex.practicum.stealth.explore.stat.model.ViewEntity(s.app, s.uri, count(s.ip)) from StatEntity s " +
-            "where s.uri = ?1 " +
-            "and s.timestamp >= ?2 " +
-            "and s.timestamp <= ?3 " +
-            "group by s.app, s.uri ")
+    @Query("SELECT new yandex.practicum.stealth.explore.stat.model.ViewEntity(s.app, s.uri, count(s.ip)) FROM StatEntity s " +
+            "WHERE s.uri = ?1 " +
+            "AND s.timestamp >= ?2 " +
+            "AND s.timestamp <= ?3 " +
+            "GROUP BY s.app, s.uri ")
     List<ViewEntity> findAllHit(String uri, LocalDateTime timeStart, LocalDateTime timeEnd);
 
-    @Query("select new yandex.practicum.stealth.explore.stat.model.ViewEntity(s.app, s.uri, count(distinct s.ip)) from StatEntity s " +
-            "where s.uri = ?1 " +
-            "and s.timestamp >= ?2 " +
-            "and s.timestamp <= ?3 " +
-            "group by s.app, s.uri ")
+    @Query("SELECT new yandex.practicum.stealth.explore.stat.model.ViewEntity(s.app, s.uri, count(distinct s.ip)) FROM StatEntity s " +
+            "WHERE s.uri = ?1 " +
+            "AND s.timestamp >= ?2 " +
+            "AND s.timestamp <= ?3 " +
+            "GROUP BY s.app, s.uri ")
     List<ViewEntity> findAllHitsDistinct(String uri, LocalDateTime timeStart, LocalDateTime timeEnd);
 }

@@ -39,6 +39,7 @@ public class AdminEventsController {
         log.info("=== Call 'GET:{}' with 'users': {}, 'states': {}, 'categories': {}, 'rangeStart': {}, " +
                         "'rangeEnd': {}, 'from': {}, 'size': {}",
                 request.getRequestURI(), users, states, categories, rangeStart, rangeEnd, from, size);
+
         return eventService.searchEvents(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
@@ -48,6 +49,7 @@ public class AdminEventsController {
                                          HttpServletRequest request) {
         log.info("=== Call 'PUT:{}' with 'eventId': {}, 'body': {}",
                 request.getRequestURI(), eventId, body);
+
         return eventService.updateEventByAdmin(eventId, body);
     }
 
@@ -56,6 +58,7 @@ public class AdminEventsController {
                                          HttpServletRequest request) {
         log.info("=== Call 'PATCH:{}' with 'eventId': {}",
                 request.getRequestURI(), eventId);
+
         return eventService.publishingEventByAdmin(eventId);
     }
 
@@ -64,6 +67,7 @@ public class AdminEventsController {
                                          HttpServletRequest request) {
         log.info("=== Call 'PATCH:{}' with 'eventId': {}",
                 request.getRequestURI(), eventId);
+
         return eventService.cancelingEventByAdmin(eventId);
     }
 }

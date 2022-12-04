@@ -17,13 +17,13 @@ import javax.validation.constraints.Size;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "u_id")
     private Long id;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "u_email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "user_name", nullable = false)
+    @Column(name = "u_name", nullable = false)
     @Size(min = 1, max = 255)
     private String name;
 }

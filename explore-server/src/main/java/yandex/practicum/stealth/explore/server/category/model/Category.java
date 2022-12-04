@@ -16,8 +16,8 @@ import javax.persistence.*;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "categories_id")
+    @Column(name = "ct_id")
     private Long id;
-    @Column(name = "categories_name")
+    @Column(name = "ct_name")
     private String name;
 }

@@ -25,7 +25,7 @@ public class AdminCompilationsController {
                                               HttpServletRequest request) {
         log.info("=== Call 'POST:{}' with 'body': {}",
                 request.getRequestURI(), body);
-        return compilationService.addCompilation(body);
+        return compilationService.add(body);
     }
 
     @DeleteMapping("/{compId}")
@@ -33,7 +33,7 @@ public class AdminCompilationsController {
                                                        HttpServletRequest request) {
         log.info("=== Call 'DELETE:{}' with 'compId': {}",
                 request.getRequestURI(), compId);
-        compilationService.deleteCompById(compId);
+        compilationService.deleteById(compId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -62,7 +62,7 @@ public class AdminCompilationsController {
                                                      HttpServletRequest request) {
         log.info("=== Call 'DELETE:{}' with 'compId': {}",
                 request.getRequestURI(), compId);
-        compilationService.switchPinCompilation(compId, false);
+        compilationService.switchPin(compId, false);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -71,7 +71,7 @@ public class AdminCompilationsController {
                                                   HttpServletRequest request) {
         log.info("=== Call 'PATCH:{}' with 'compId': {}",
                 request.getRequestURI(), compId);
-        compilationService.switchPinCompilation(compId, true);
+        compilationService.switchPin(compId, true);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

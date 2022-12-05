@@ -10,8 +10,6 @@ public interface CategoryService {
 
     List<CategoryDto> getAll(Integer from, Integer size);
 
-    CategoryDto getById(Long catId);
-
     Category findById(Long catId);
 
     CategoryDto create(NewCategoryDto body);

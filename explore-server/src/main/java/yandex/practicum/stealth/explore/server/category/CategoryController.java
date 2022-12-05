@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import yandex.practicum.stealth.explore.server.category.dto.CategoryDto;
+import yandex.practicum.stealth.explore.server.category.dto.CategoryDtoMapper;
 import yandex.practicum.stealth.explore.server.category.service.CategoryService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +31,6 @@ public class CategoryController {
     public CategoryDto getCategoryById(@PathVariable Long catId, HttpServletRequest request) {
         log.info("=== Call 'GET:{}' with 'catId': {}", request.getRequestURI(), catId);
 
-        return service.getById(catId);
+        return CategoryDtoMapper.catToDto(service.findById(catId));
     }
 }

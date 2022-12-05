@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yandex.practicum.stealth.explore.server.event.model.Event;
 import yandex.practicum.stealth.explore.server.event.service.EventService;
+import yandex.practicum.stealth.explore.server.exception.BadRequestException;
 import yandex.practicum.stealth.explore.server.exception.ConditionsNotMetException;
 import yandex.practicum.stealth.explore.server.exception.NotFoundException;
-import yandex.practicum.stealth.explore.server.exception.BadRequestException;
 import yandex.practicum.stealth.explore.server.request.dao.RequestRepository;
 import yandex.practicum.stealth.explore.server.request.dto.ParticipationDtoMapper;
 import yandex.practicum.stealth.explore.server.request.dto.ParticipationRequestDto;
@@ -17,10 +17,11 @@ import yandex.practicum.stealth.explore.server.user.service.UserService;
 import yandex.practicum.stealth.explore.server.util.EventState;
 import yandex.practicum.stealth.explore.server.util.ParticipationStatus;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static yandex.practicum.stealth.explore.server.request.dto.ParticipationDtoMapper.getNewRequest;
+import static yandex.practicum.stealth.explore.server.request.dto.ParticipationDtoMapper.requestToDto;
 import static yandex.practicum.stealth.explore.server.util.ParticipationStatus.*;
 
 @Service
@@ -32,7 +33,7 @@ public class RequestServiceImpl implements RequestService {
     private final UserService userService;
     private final RequestRepository requestRepository;
 
-    private final ParticipationDtoMapper participationDtoMapper;
+//    private final ParticipationDtoMapper participationDtoMapper;
 
     @Override
     public List<ParticipationRequestDto> getUserEventRequests(Long userId, Long eventId) {
@@ -40,7 +41,7 @@ public class RequestServiceImpl implements RequestService {
         eventService.findEventById(eventId);
 
         return requestRepository.findAllByEventId(eventId).stream()
-                .map(participationDtoMapper::requestToDto)
+                .map(ParticipationDtoMapper::requestToDto)
                 .collect(Collectors.toList());
     }
 
@@ -52,18 +53,18 @@ public class RequestServiceImpl implements RequestService {
         if (event.getRequestModeration().equals(false) || event.getParticipantLimit().equals(0)) {
             request.setStatus(CONFIRMED);
 
-            return participationDtoMapper.requestToDto(request);
+            return requestToDto(request);
         }
         Long confirmedRequests = countRequests(eventId, CONFIRMED);
         if (confirmedRequests < event.getParticipantLimit()) {
             request.setStatus(CONFIRMED);
 
-            return participationDtoMapper.requestToDto(request);
+            return requestToDto(request);
         }
         request.setStatus(REJECTED);
         requestRepository.save(request);
 
-        return participationDtoMapper.requestToDto(request);
+        return requestToDto(request);
     }
 
     @Override
@@ -74,14 +75,14 @@ public class RequestServiceImpl implements RequestService {
         request.setStatus(REJECTED);
         requestRepository.save(request);
 
-        return participationDtoMapper.requestToDto(request);
+        return requestToDto(request);
     }
 
     @Override
     public List<ParticipationRequestDto> getRequestsForParticipate(Long userId) {
         userService.getUserById(userId);
         return requestRepository.findAllByRequester_Id(userId).stream()
-                .map(participationDtoMapper::requestToDto)
+                .map(ParticipationDtoMapper::requestToDto)
                 .collect(Collectors.toList());
     }
 
@@ -104,18 +105,13 @@ public class RequestServiceImpl implements RequestService {
         if (event.getParticipantLimit() != 0 && countRequests(eventId, CONFIRMED) >= event.getParticipantLimit()) {
             throw new ConditionsNotMetException("The limit on the number of participants has been exceeded.");
         }
-        ParticipationRequest request = ParticipationRequest.builder()
-                .requester(user)
-                .event(event)
-                .status(PENDING)
-                .created(LocalDateTime.now())
-                .build();
+        ParticipationRequest request = getNewRequest(user, event);
         if (!event.getRequestModeration()) {
             request.setStatus(CONFIRMED);
         }
 
         requestRepository.save(request);
-        return participationDtoMapper.requestToDto(request);
+        return requestToDto(request);
     }
 
     public ParticipationRequestDto rejectUserParticipationRequest(Long userId, Long requestId) {
@@ -128,7 +124,7 @@ public class RequestServiceImpl implements RequestService {
         request.setStatus(CANCELED);
 
         requestRepository.save(request);
-        return participationDtoMapper.requestToDto(request);
+        return requestToDto(request);
     }
 
     // privates

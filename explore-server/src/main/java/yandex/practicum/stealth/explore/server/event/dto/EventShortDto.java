@@ -6,8 +6,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
-//@AllArgsConstructor
-//@NoArgsConstructor
 @Setter
 @Getter
 @ToString

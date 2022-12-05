@@ -49,10 +49,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public CategoryDto getById(Long catId) {
-        return CategoryDtoMapper.catToDto(findById(catId));
-    }
     // "/admin/categories" endpoints
 
     @Override

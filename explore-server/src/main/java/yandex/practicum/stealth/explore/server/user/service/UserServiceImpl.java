@@ -57,14 +57,11 @@ public class UserServiceImpl implements UserService {
         List<UserDto> users;
 
         if (ids != null && ids.size() > 0) {
-            users = userRepository.findAll(pageRequest).stream()
-                    .filter(user -> ids.contains(user.getId()))
+            users = userRepository.findAllByIds(ids, pageRequest).stream()
                     .map(UserDtoMapper::userToDto)
                     .collect(Collectors.toList());
         } else {
             users = userRepository.findAll(pageRequest).stream()
-                    .skip(from)
-                    .limit(size)
                     .map(UserDtoMapper::userToDto)
                     .collect(Collectors.toList());
         }

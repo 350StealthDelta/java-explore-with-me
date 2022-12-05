@@ -35,7 +35,6 @@ public class AdminCompilationsController {
         log.info("=== Call 'DELETE:{}' with 'compId': {}",
                 request.getRequestURI(), compId);
         compilationService.deleteById(compId);
-
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -67,7 +66,6 @@ public class AdminCompilationsController {
         log.info("=== Call 'DELETE:{}' with 'compId': {}",
                 request.getRequestURI(), compId);
         compilationService.switchPin(compId, false);
-
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -77,7 +75,6 @@ public class AdminCompilationsController {
         log.info("=== Call 'PATCH:{}' with 'compId': {}",
                 request.getRequestURI(), compId);
         compilationService.switchPin(compId, true);
-
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

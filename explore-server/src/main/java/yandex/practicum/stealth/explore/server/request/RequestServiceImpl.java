@@ -8,8 +8,6 @@ import yandex.practicum.stealth.explore.server.event.service.EventService;
 import yandex.practicum.stealth.explore.server.exception.BadRequestException;
 import yandex.practicum.stealth.explore.server.exception.ConditionsNotMetException;
 import yandex.practicum.stealth.explore.server.exception.NotFoundException;
-import yandex.practicum.stealth.explore.server.exception.BadRequestException;
-import yandex.practicum.stealth.explore.server.exception.NotFoundException;
 import yandex.practicum.stealth.explore.server.request.dao.RequestRepository;
 import yandex.practicum.stealth.explore.server.request.dto.ParticipationDtoMapper;
 import yandex.practicum.stealth.explore.server.request.dto.ParticipationRequestDto;

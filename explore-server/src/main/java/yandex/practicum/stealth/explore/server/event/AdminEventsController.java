@@ -28,7 +28,7 @@ public class AdminEventsController {
     public List<EventFullDto> getAdminEvents(@RequestParam(name = "users", required = false) List<Long> users,
                                              @RequestParam(name = "states", required = false) List<EventState> states,
                                              @RequestParam(name = "categories", required = false)
-                                                 List<Integer> categories,
+                                             List<Integer> categories,
                                              @RequestParam(name = "rangeStart", required = false)
                                              @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                              @RequestParam(name = "rangeEnd", required = false)

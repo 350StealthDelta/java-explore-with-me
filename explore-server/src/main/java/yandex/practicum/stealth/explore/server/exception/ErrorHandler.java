@@ -21,17 +21,16 @@ import java.time.LocalDateTime;
 @Slf4j
 @NoArgsConstructor
 public class ErrorHandler {
-    @ExceptionHandler
+/*    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse generalException(Throwable e) {
         String reason = "Unexpected internal server error.";
         log.warn("Internal server error {}, {}, {}, {}", e.getMessage(), reason, HttpStatus.INTERNAL_SERVER_ERROR.name(),
                 LocalDateTime.now());
-        e.printStackTrace();
 
         return new ErrorResponse(e.getStackTrace(), e.getMessage(), reason,
                 HttpStatus.INTERNAL_SERVER_ERROR, LocalDateTime.now());
-    }
+    }*/
 
     @ExceptionHandler({ValidationException.class,
             ConstraintViolationException.class,
@@ -45,7 +44,6 @@ public class ErrorHandler {
         String reason = "For the requested operation the conditions are not met.";
         log.warn("IllegalArgumentException {}, {}, {}, {}", e.getMessage(), reason, HttpStatus.BAD_REQUEST.name(),
                 LocalDateTime.now());
-        e.printStackTrace();
 
         return new ErrorResponse(e.getStackTrace(), e.getMessage(), reason,
                 HttpStatus.BAD_REQUEST, LocalDateTime.now());
@@ -58,20 +56,19 @@ public class ErrorHandler {
         String reason = "The required object was not found.";
         log.warn("{}, {}, {}, {}", HttpStatus.NOT_FOUND.name(), reason, e.getMessage(),
                 LocalDateTime.now());
-        e.printStackTrace();
 
         return new ErrorResponse(e.getStackTrace(), e.getMessage(), reason, HttpStatus.NOT_FOUND,
                 LocalDateTime.now());
     }
 
     @ExceptionHandler({NotAllowedException.class,
-            ConditionsNotMetException.class})
+            ConditionsNotMetException.class,
+            IllegalStateException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse notAllowedException(NotAllowedException e) {
+    public ErrorResponse notAllowedException(Exception e) {
         String reason = "For the requested operation the conditions are not met.";
         log.warn("{}, {}, {}, {}", HttpStatus.FORBIDDEN.name(), reason, e.getMessage(),
                 LocalDateTime.now());
-        e.printStackTrace();
 
         return new ErrorResponse(e.getStackTrace(), e.getMessage(), reason, HttpStatus.FORBIDDEN,
                 LocalDateTime.now());
@@ -85,7 +82,6 @@ public class ErrorHandler {
         log.warn("{}, {}, {}, {}", HttpStatus.CONFLICT.name(), reason, e.getMessage(),
                 LocalDateTime.now());
 
-        e.printStackTrace();
         return new ErrorResponse(e.getStackTrace(), e.getMessage(), reason, HttpStatus.CONFLICT,
                 LocalDateTime.now());
     }

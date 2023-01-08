@@ -38,7 +38,7 @@ public class StatController {
         log.info("=== Call 'GET:{}' with 'start': {}, 'end': {}, 'uris': {}, 'unique': {}",
                 request.getRequestURI(), start, end, uris, unique);
         List<ViewStats> stats = service.getEvents(start, end, uris, unique);
-        log.info("=== RESULT: {}", stats);
+        log.info("=== RESULT: hits count={}", stats.size());
 
         return stats;
     }

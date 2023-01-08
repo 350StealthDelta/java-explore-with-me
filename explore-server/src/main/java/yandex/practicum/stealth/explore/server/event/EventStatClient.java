@@ -23,7 +23,7 @@ public class EventStatClient extends BaseClient implements EventStat {
     private static final String API_PREFIX = "";
 
     @Autowired
-    public EventStatClient(@Value("${explore-stats.url}") String serverUrl, RestTemplateBuilder builder) {
+    public EventStatClient(@Value("${explore-stat.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))

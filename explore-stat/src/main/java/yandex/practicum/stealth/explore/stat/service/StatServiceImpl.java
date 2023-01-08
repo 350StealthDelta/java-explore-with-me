@@ -28,10 +28,7 @@ public class StatServiceImpl implements StatService {
     @Transactional
     public ViewStats addEventStatistic(EndpointHit inputDto) {
         StatEntity statEntity = inputDtoToStat(inputDto);
-        System.out.println(statEntity);
         StatEntity result = repository.save(statEntity);
-        System.out.println(result);
-        System.out.println(repository.findById(result.getId()).orElseThrow());
 
         return viewToOutDto(statToView(result));
     }

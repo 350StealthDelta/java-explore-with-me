@@ -26,4 +26,8 @@ public class CustomPageRequest extends PageRequest {
     public static CustomPageRequest of(int from, int size, Sort sort) {
         return new CustomPageRequest(from, size, sort);
     }
+
+    public static CustomPageRequest of(int from, int size) {
+        return new CustomPageRequest(from, size, Sort.unsorted());
+    }
 }
